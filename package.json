@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "csv-parse": "^6.1.0",
+    "firebase": "^12.7.0",
     "next": "16.1.1",
+    "node-fetch": "^3.3.2",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

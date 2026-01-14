@@ -1,0 +1,11 @@
+{
+  "sku": "string (unique, stable)",
+  "title": "string",
+  "price": number
+}
+{
+    "sku": "2067345",
+    "title": "Cool Product",
+    "price": 24.99
+
+}
