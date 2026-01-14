@@ -1,11 +1,22 @@
 {
-  "sku": "string (unique, stable)",
-  "title": "string",
-  "price": number
-}
-{
-    "sku": "2067345",
-    "title": "Cool Product",
-    "price": 24.99
-
+  "products": [
+    {
+      "sku": "2067345",
+      "title": "Cool Product",
+      "price": 24.99,
+      "currency": "USD",
+      "url": "https://example.com/products/2067345",
+      "image": "https://picsum.photos/seed/2067345/800/800",
+      "description": "A test product used to validate ingestProductUrl."
+    },
+    {
+      "sku": "9811223",
+      "title": "Another Cool Product",
+      "price": 39.5,
+      "currency": "USD",
+      "url": "https://example.com/products/9811223",
+      "image": "https://picsum.photos/seed/9811223/800/800",
+      "description": "Second test product for multi-product ingestion."
+    }
+  ]
 }
