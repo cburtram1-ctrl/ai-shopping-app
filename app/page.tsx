@@ -1,6 +1,6 @@
 
 import AuthGate from "@/components/AuthGate";
-import IngestTest from "@/components/IngestTest";
+
 
 
 export default function Home() {
@@ -12,8 +12,6 @@ export default function Home() {
             <div className="text-xs tracking-widest text-neutral-500">
               AI SHOPPING EDITOR
             </div>
-                  <h1>Home</h1>
-      <IngestTest />
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">
               A small set of items worth noticing today.
             </h1>
