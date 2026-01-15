@@ -9,6 +9,7 @@ import {
   query,
   Timestamp,
 } from "firebase/firestore";
+import Link from "next/link"; // ✅ ADD THIS
 import { db } from "@/lib/firebaseClient";
 
 type Product = {
@@ -19,7 +20,7 @@ type Product = {
   image?: string;
   url?: string;
   description?: string;
-  updatedAt?: Timestamp | null; // serverTimestamp comes back as Timestamp
+  updatedAt?: Timestamp | null;
 };
 
 function formatPrice(price: number, currency?: string) {
@@ -48,8 +49,6 @@ export default function ProductsGrid() {
       setError(null);
 
       try {
-        // Prefer newest first. If you don't have updatedAt indexed yet, you can switch
-        // orderBy("title", "asc") instead.
         const q = query(productsRef, orderBy("updatedAt", "desc"), limit(50));
         const snap = await getDocs(q);
 
@@ -58,9 +57,6 @@ export default function ProductsGrid() {
         const rows = snap.docs.map((d) => ({ ...(d.data() as any) })) as Product[];
         setProducts(rows);
       } catch (e: any) {
-        // Common causes:
-        // - Missing composite index
-        // - Firestore rules blocking reads
         const msg =
           e?.message ||
           "Failed to load products. Check Firestore rules and indexes.";
@@ -79,104 +75,83 @@ export default function ProductsGrid() {
   }, [productsRef]);
 
   return (
-    <section style={{ marginTop: 24 }}>
-      <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-        <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>Products</h2>
-        <div style={{ opacity: 0.7 }}>{products.length} loaded</div>
+    <section className="mt-6">
+      <div className="flex items-baseline gap-3">
+        <h2 className="text-xl font-extrabold m-0">Products</h2>
+        <div className="text-sm text-muted-foreground">{products.length} loaded</div>
       </div>
 
-      {loading && <p style={{ marginTop: 12 }}>Loading products…</p>}
+      {loading && <p className="mt-3 text-sm text-muted-foreground">Loading products…</p>}
 
       {error && (
-        <div
-          style={{
-            marginTop: 12,
-            padding: 12,
-            borderRadius: 8,
-            border: "1px solid rgba(176,0,32,0.35)",
-            background: "rgba(176,0,32,0.06)",
-          }}
-        >
-          <div style={{ fontWeight: 800, color: "#b00020" }}>Error</div>
-          <div style={{ marginTop: 6, whiteSpace: "pre-wrap" }}>{error}</div>
-          <div style={{ marginTop: 10, opacity: 0.8 }}>
-            If this mentions an index, open the error link in the console to
-            create it automatically.
+        <div className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+          <div className="font-extrabold text-destructive">Error</div>
+          <div className="mt-1 whitespace-pre-wrap text-sm">{error}</div>
+          <div className="mt-2 text-xs text-muted-foreground">
+            If this mentions an index, open the error link in the console to create it automatically.
           </div>
         </div>
       )}
 
       {!loading && !error && products.length === 0 && (
-        <p style={{ marginTop: 12 }}>No products found yet. Try /add.</p>
+        <p className="mt-3 text-sm text-muted-foreground">No products found yet. Try /add.</p>
       )}
 
       {!loading && !error && products.length > 0 && (
-        <div
-          style={{
-            marginTop: 16,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-            gap: 16,
-          }}
-        >
+        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {products.map((p) => (
-            <article
+            // ✅ LINK WRAPPER START
+            <Link
               key={p.sku}
-              style={{
-                border: "1px solid rgba(0,0,0,0.12)",
-                borderRadius: 12,
-                overflow: "hidden",
-                background: "#fff",
-              }}
+              href={`/product/${encodeURIComponent(p.sku)}`}
+              className="group block"
             >
-              <div
-                style={{
-                  aspectRatio: "1 / 1",
-                  background: "rgba(0,0,0,0.04)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {p.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={p.image}
-                    alt={p.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                ) : (
-                  <div style={{ opacity: 0.6, fontWeight: 700 }}>No image</div>
-                )}
-              </div>
-
-              <div style={{ padding: 12 }}>
-                <div style={{ fontWeight: 800, lineHeight: 1.2 }}>
-                  {p.title}
+              <article className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm transition hover:shadow-md">
+                <div className="aspect-square bg-muted overflow-hidden">
+                  {p.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-muted-foreground">
+                      No image
+                    </div>
+                  )}
                 </div>
 
-                <div style={{ marginTop: 8, fontWeight: 800 }}>
-                  {formatPrice(p.price, p.currency)}
-                </div>
-
-                <div style={{ marginTop: 8, opacity: 0.7, fontSize: 12 }}>
-                  SKU: <code>{p.sku}</code>
-                </div>
-
-                {p.url && (
-                  <div style={{ marginTop: 10 }}>
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ fontWeight: 700, textDecoration: "underline" }}
-                    >
-                      View source
-                    </a>
+                <div className="p-3">
+                  <div className="line-clamp-2 font-extrabold leading-snug">
+                    {p.title}
                   </div>
-                )}
-              </div>
-            </article>
+
+                  <div className="mt-2 text-sm font-extrabold">
+                    {formatPrice(p.price, p.currency)}
+                  </div>
+
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    SKU: <code className="rounded bg-muted px-1 py-0.5">{p.sku}</code>
+                  </div>
+
+                  {/* Optional: keep the source link, but prevent it from hijacking the card click */}
+                  {p.url && (
+                    <div className="mt-3">
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-xs font-semibold underline underline-offset-2 text-muted-foreground hover:text-foreground"
+                      >
+                        View source
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </article>
+            </Link>
           ))}
         </div>
       )}
