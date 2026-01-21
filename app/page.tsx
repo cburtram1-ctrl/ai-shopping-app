@@ -1,35 +1,80 @@
-
+import Link from "next/link";
 import AuthGate from "@/components/AuthGate";
 import ProductsGrid from "@/components/ProductsGrid";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   return (
     <AuthGate>
-      <main className="min-h-screen px-8 py-10">
-        <div className="mx-auto max-w-5xl">
-          <header className="mb-10">
-            <div className="text-xs tracking-widest text-neutral-500">
-              AI SHOPPING EDITOR
+      <main className="min-h-screen">
+        {/* Top bar */}
+        <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="text-xs font-semibold tracking-widest text-muted-foreground">
+                AI SHOPPING EDITOR
+              </div>
             </div>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-              A small set of items worth noticing today.
-            </h1>
-            <p className="mt-2 max-w-2xl text-neutral-600">
-              Minimal noise. High alignment. The system learns quietly from what you save and dismiss.
-            </p>
-          </header>
 
-          <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {/* Placeholder cards (we’ll replace with real feed docs next) */}
-        <ProductsGrid />
-          </section>
+            <nav className="flex items-center gap-2">
+              <Button variant="ghost" asChild>
+                <Link href="/">Home</Link>
+              </Button>
 
-          <footer className="mt-12 text-sm text-neutral-500">
-            Tip: Start by adding products and onboarding taste. The feed will get shorter as confidence rises.
+              <Button asChild>
+                <Link href="/add">Add products</Link>
+              </Button>
+            </nav>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <Card className="rounded-2xl">
+            <CardHeader className="space-y-2">
+              <div className="text-xs tracking-widest text-muted-foreground">
+                DAILY FEED
+              </div>
+              <CardTitle className="text-3xl font-semibold tracking-tight">
+                A small set of items worth noticing today.
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              <p className="max-w-2xl text-sm text-muted-foreground">
+                Minimal noise. High alignment. The system learns quietly from what
+                you save and dismiss.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <Button asChild>
+                  <Link href="/add">Ingest from URL</Link>
+                </Button>
+
+                <Button variant="outline" asChild>
+                  <Link href="/add">Add another feed</Link>
+                </Button>
+
+                {/* Future: Saved / Profile / Settings */}
+                {/* <Button variant="ghost" asChild><Link href="/saved">Saved</Link></Button> */}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Separator className="my-8" />
+
+          {/* ProductsGrid already includes its own grid */}
+          <ProductsGrid />
+
+          <footer className="mt-12 text-sm text-muted-foreground">
+            Tip: Start by adding products and onboarding taste. The feed will get
+            shorter as confidence rises.
           </footer>
         </div>
       </main>
     </AuthGate>
   );
 }
-

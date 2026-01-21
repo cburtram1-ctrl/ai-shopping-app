@@ -9,7 +9,7 @@ import {
   query,
   Timestamp,
 } from "firebase/firestore";
-import Link from "next/link"; // ✅ ADD THIS
+import Link from "next/link";
 import { db } from "@/lib/firebaseClient";
 
 type Product = {
@@ -77,37 +77,46 @@ export default function ProductsGrid() {
   return (
     <section className="mt-6">
       <div className="flex items-baseline gap-3">
-        <h2 className="text-xl font-extrabold m-0">Products</h2>
-        <div className="text-sm text-muted-foreground">{products.length} loaded</div>
+        <h2 className="m-0 text-xl font-extrabold">Products</h2>
+        <div className="text-sm text-muted-foreground">
+          {products.length} loaded
+        </div>
       </div>
 
-      {loading && <p className="mt-3 text-sm text-muted-foreground">Loading products…</p>}
+      {loading && (
+        <p className="mt-3 text-sm text-muted-foreground">Loading products…</p>
+      )}
 
       {error && (
         <div className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
           <div className="font-extrabold text-destructive">Error</div>
           <div className="mt-1 whitespace-pre-wrap text-sm">{error}</div>
           <div className="mt-2 text-xs text-muted-foreground">
-            If this mentions an index, open the error link in the console to create it automatically.
+            If this mentions an index, open the error link in the console to
+            create it automatically.
           </div>
         </div>
       )}
 
       {!loading && !error && products.length === 0 && (
-        <p className="mt-3 text-sm text-muted-foreground">No products found yet. Try /add.</p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          No products found yet. Try /add.
+        </p>
       )}
 
       {!loading && !error && products.length > 0 && (
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {products.map((p) => (
-            // ✅ LINK WRAPPER START
-            <Link
+            <article
               key={p.sku}
-              href={`/product/${encodeURIComponent(p.sku)}`}
-              className="group block"
+              className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm transition hover:shadow-md"
             >
-              <article className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm transition hover:shadow-md">
-                <div className="aspect-square bg-muted overflow-hidden">
+              {/* ✅ Only this area is clickable / navigates */}
+              <Link
+                href={`/product/${encodeURIComponent(p.sku)}`}
+                className="group block"
+              >
+                <div className="aspect-square overflow-hidden bg-muted">
                   {p.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -132,26 +141,26 @@ export default function ProductsGrid() {
                   </div>
 
                   <div className="mt-2 text-xs text-muted-foreground">
-                    SKU: <code className="rounded bg-muted px-1 py-0.5">{p.sku}</code>
+                    SKU:{" "}
+                    <code className="rounded bg-muted px-1 py-0.5">{p.sku}</code>
                   </div>
-
-                  {/* Optional: keep the source link, but prevent it from hijacking the card click */}
-                  {p.url && (
-                    <div className="mt-3">
-                      <a
-                        href={p.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-xs font-semibold underline underline-offset-2 text-muted-foreground hover:text-foreground"
-                      >
-                        View source
-                      </a>
-                    </div>
-                  )}
                 </div>
-              </article>
-            </Link>
+              </Link>
+
+              {/* ✅ Actions live OUTSIDE the Link so no nested <a> */}
+              {p.url && (
+                <div className="px-3 pb-3">
+                  <a
+                    href={p.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-semibold underline underline-offset-2 text-muted-foreground hover:text-foreground"
+                  >
+                    View source
+                  </a>
+                </div>
+              )}
+            </article>
           ))}
         </div>
       )}
